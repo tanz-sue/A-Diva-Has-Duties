@@ -1,11 +1,11 @@
-import React, { createContext, useContext, UserContext, useState } from "react";
+import React, { createContext, useContext, useState } from "react";
 
 const UserContext = createContext(null);
 
 export function UserProvide({children}) {
     const [user, setUser] = useState(() =>{
         const saved = localStorage.getItem("diva_user");
-        return saved ? JSON.parse(saved) : null ;
+        return saved ? JSON.parse(saved) : null;
     });
 
     const updateUser = (patch) => {
