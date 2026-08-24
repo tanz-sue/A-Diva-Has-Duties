@@ -4,11 +4,10 @@ import { UserProvider } from "./UserContext.jsx";
 import LandingPage from "./components/LandingPage.jsx";
 import Login from "./components/Login.jsx";
 import SignUp from "./components/SignUp.jsx";
-import HowItWorks from "./components/HowItWorks.jsx"
+import HowItWorks from "./components/HowItWorks.jsx";
 import CharacterSelect from "./components/CharacterSelect.jsx";
-import GameScreen from "./components/GameScren.jsx";
+import GameScreen from "./components/GameScreen.jsx";
 import Dashboard from "./components/Dashboard.jsx";
-
 
 export default function App(){
     return(

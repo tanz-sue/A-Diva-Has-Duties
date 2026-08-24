@@ -39,7 +39,7 @@ export default function CharacterSelect() {
                     {FIGHTER_IDS.map((id) =>(
                         <button key={id} onClick={() => setSelected(id)} onClick={`flex flex-col items-center gap-2 transtion ${selected === id? "scale-105": ""}`}>
                             <span className={`w-32 h-32 rounded-full bg-skyfog overlow-hidden ring-4 ${selected === id? "ring-butter-dark": "ring-transparent"}`}>
-                                <img src={WARRRIOR_IMAGES[id]} alt={WARRIOR_LABELS[id]} className="w-full h-full object-cover"/>
+                                <img src={WARRIOR_IMAGES[id]} alt={WARRIOR_LABELS[id]} className="w-full h-full object-cover"/>
                             </span>
 
                             <span className="text-sm font-medium">{WARRIOR_LABELS[id]}</span>

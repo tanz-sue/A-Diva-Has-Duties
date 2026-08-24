@@ -1,8 +1,8 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, UserProvider, useState } from "react";
 
 const UserContext = createContext(null);
 
-export function UserProvide({children}) {
+export function UserProvider({children}) {
     const [user, setUser] = useState(() =>{
         const saved = localStorage.getItem("diva_user");
         return saved ? JSON.parse(saved) : null;
