@@ -11,13 +11,13 @@ export default {
                 ink: "#2B2620",
             },
             fontFamily: {
-            display: ["'Playfair Display'", "serif"],
-            body: ["'EB Garamond'", "serif"],
+                display: ["'Playfair Display'", "serif"],
+                body: ["'EB Garamond'", "serif"],
             },
             backgroundImage:{
                 "diva-gradient": "linear-gradient(180deg, #F7EFDA 0%, #DCE7F2 55%, #A9C6E8 100%)",
             },
         },
     },
-    plugins: [].
+    plugins: []
 };
