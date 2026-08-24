@@ -30,7 +30,7 @@ export function UserProvide({children}) {
 }
 
 export function useUser() {
-    const ctx = useContex(UserContext);
+    const ctx = useContext(UserContext);
     if (!ctx) throw new Error ("useUser must be used inside <UserProvider>");
     return ctx;
 }
