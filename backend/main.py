@@ -3,7 +3,8 @@ import random
 import uuid
 from typing import Optional
 
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from fastapi import FastAPI , HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from supabase import create_client, Client
@@ -15,8 +16,7 @@ load_dotenv()
 
 GEMINI_API_KEY=os.getenv("GEMINI_API_KEY")
 if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
-    gemini_client = genai.GenerativeModel("gemini-1.5-pro")
+    gemini_client = genai.Client(api_key=GEMINI_API_KEY)
 else:
     gemini_client=None
 
@@ -108,25 +108,22 @@ def generate_subtasks(title:str)-> list[str]:
         raise HTTPException(400 , "Task title can't be empty")
 
     if not gemini_client:
-        return _fallback_subtasks
+        return _fallback_subtasks(title)
 
     try:
-        model=genai.GenerativeModel(
-            model_name="gemini-1.5-pro",
-            system_instruction = SUBTASK_SYSTEM_PROMPT
-        )
-
-        response = model.generate_content(
-            title,
-            generation_config=genai.types.GenerationConfig(
+        response = gemini_client.models.generate_content(
+            model="gemini-2.5-pro", 
+            contents=title,
+            config=types.GenerateContentConfig(
+                system_instruction=SUBTASK_SYSTEM_PROMPT,
                 max_output_tokens=300,
-                response_mime_type="application/json"
+                response_mime_type="application/json",
             )
-        )
+        )  
         raw = response.text.strip()
         subtasks = json.loads(raw)
 
-        subtasks=[str(s).strip for s in subtasks if str(s).strip()]
+        subtasks=[str(s).strip() for s in subtasks if str(s).strip()]
 
         if not subtasks:
             return _fallback_subtasks(title)
@@ -134,7 +131,7 @@ def generate_subtasks(title:str)-> list[str]:
 
     except Exception as e:
         print(f"[generate_subtasks] Gemini API call failed , using fallback: {e}")
-        return _fallback_subtasks
+        return _fallback_subtasks(title)
 
 @app.post("/auth/signup")
 def signup(req: SignupRequest):
