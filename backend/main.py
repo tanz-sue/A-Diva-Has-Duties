@@ -155,8 +155,8 @@ def signup(req: SignupRequest):
             "email": req.email,
             "character": "None",
             "level": 0,
-            "task_done_this_level": 0
-            "last_defeated_monster":None
+            "task_done_this_level": 0,
+            "last_defeated_monster":None,
         }).execute()
 
         return{"user_id": user_id, "name": req.name, "level": 0}

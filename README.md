@@ -27,8 +27,7 @@ unfinished battle — the monster just waits for you to come back.
 |---|---|
 | Frontend | React + Vite + Tailwind CSS + React Router |
 | Backend | FastAPI (Python) |
-| AI | Gemini (`gemini 2.5 pro
-`) for subtask generation |
+| AI | Gemini (`gemini 2.5 pro`) for subtask generation |
 | Database / Auth | Supabase (Postgres + Auth) — **schema created, not yet wired into the backend; see Status below** |
 
 ## Project structure
