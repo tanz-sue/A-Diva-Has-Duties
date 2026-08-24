@@ -4,7 +4,7 @@ import { useUser } from "../UserContext.jsx";
 import { api } from "../api.js";
 import AppNavBar from "./AppNavBar.jsx";
 import { MONSTER_IMAGES } from "../monsterAssets.js";
-import { WARRRIOR_IMAGES } from "../warriorAssets.js";
+import { WARRIOR_IMAGES } from "../warriorAssets.js";
 
 export default function GameScreen() {
     const navigate = useNavigate();
