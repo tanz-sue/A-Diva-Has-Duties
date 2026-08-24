@@ -23,8 +23,14 @@ else:
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 if not SUPABASE_URL or not SUPABASE_KEY:
-    raise RuntimeError("SUPABASE_URL and SUPABASE_KEY must be set in the environment")
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+    print("[WARNING] SUPABASE_URL or SUPABASE_KEY is missing!")
+    supabase: Optional[Client] = None
+else:
+    try:
+        supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+    except Exception as e:
+        print(f"[ERROR] Failed to initialize Supabase client: {e}")
+        supabase = None
 
 app = FastAPI(title="A Diva Has Duties API")
 
