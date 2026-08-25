@@ -13,7 +13,7 @@ export default function SignUp() {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
-    async function handleSingUp(e) {
+    async function handleSignUp(e) {
         e.preventDefault();
         setError("");
         setLoading(true);
@@ -42,10 +42,10 @@ export default function SignUp() {
                         <input type="text" required value={username} onChange={(e) => setUsername(e.target.value)} className="w-full bg-butter rounded-md px-3 py-2 mt-1 mb-4 outline-none" />
 
                         <label className="text-sm font-medium">Email</label>
-                        <input type="email" required value={(e) => setEmail(e.target.value)} className="w-full bg-butter rounded-md px-3 py-2 mt-1 mb-4 outline-none"/>
+                        <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-butter rounded-md px-3 py-2 mt-1 mb-4 outline-none"/>
 
                         <label className="text-sm font-medium">Password</label>         
-                        <input type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-butter rounded-md px-3 py-2 mt-1 outline-noon" />
+                        <input type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-butter rounded-md px-3 py-2 mt-1 outline-none" />
 
                         {error && <p className="text-xs text-red-600 mt-3">{error}</p>}   
 

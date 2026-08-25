@@ -105,7 +105,7 @@ export default function Dashboard() {
             <ul className="space-y-3">
               {inProgressTasks.map((t) => (
                 <li
-                  key={t.task_id}
+                  key={t.id}
                   className="flex items-center justify-between bg-butter rounded-lg px-4 py-3"
                 >
                   <div className="flex items-center gap-3">
@@ -120,7 +120,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   <button
-                    onClick={() => navigate("/game", { state: { resumeTaskId: t.task_id } })}
+                    onClick={() => navigate("/game", { state: { resumeTaskId: t.id } })}
                     className="text-xs bg-cream rounded-full px-3 py-1.5 font-medium hover:bg-butter-dark transition"
                   >
                     Continue Battle

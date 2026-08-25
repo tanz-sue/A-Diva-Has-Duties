@@ -18,11 +18,11 @@ export default function Login(){
         setLoading(true);
 
         try {
-            const account = await api.login(email.password);
+            const account = await api.login(email, password);
             updateUser(account);
             navigate(account.character ? "/game": "/character-select");
         } catch (err) {
-            setError(err.message || "No account found for that email.Try signing Up instead");
+            setError(err.message || "No account found for that email. Try signing up instead.");
         } finally {
             setLoading(false);
         }
@@ -32,8 +32,8 @@ export default function Login(){
         <div className="min-h-screen bg-diva-gradient flex flex-col">
             <NavBar active ="login"/>
             <div className="flex-1 flex items-start justify-center mt-16">
-                <form onSubmit={handleSignIn} className="bg-cream rounded-xl shadow-2xl w-96 overflow hidden">
-                    <div className="h-3 bg-butter-cream"/>
+                <form onSubmit={handleSignIn} className="bg-cream rounded-xl shadow-2xl w-96 overflow-hidden">
+                    <div className="h-3 bg-butter-dark"/>
                     <div className="p-8">
                         <h1 className="font-display text-3xl text-center mb-6">
                             Welcome Back, Diva!
@@ -43,11 +43,11 @@ export default function Login(){
                         <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-butter rounded-md px-3 py-2 mt-1 mb-4 outline-none"/>
                         <label className="text-sm font-medium">Password</label>
                         <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-butter rounded-md px-3 py-2 mt-1 outline-none"/>
-                        <button type="button" className="text-xs mt-1 hover:underline">Forget Password?</button>
+                        <button type="button" className="text-xs mt-1 hover:underline">Forgot Password?</button>
 
                         {error && <p className="text-xs text-red-600 mt-3">{error}</p>}
 
-                        <button type="submit" disabled={loading} className="w-full mt-6 border border-ink rounded-ful py-2 font-medium hover:bg-butter transition disabled:opacity-50">
+                        <button type="submit" disabled={loading} className="w-full mt-6 border border-ink rounded-full py-2 font-medium hover:bg-butter transition disabled:opacity-50">
                             {loading ? "Signing in...." : "Sign in"}
                         </button>
 

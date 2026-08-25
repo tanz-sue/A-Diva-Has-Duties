@@ -162,7 +162,7 @@ def signup(req: SignupRequest):
             "email": req.email,
             "character": "None",
             "level": 0,
-            "task_done_this_level": 0,
+            "tasks_done_this_level": 0,
             "last_defeated_monster":None,
         }).execute()
 
@@ -310,7 +310,7 @@ def complete_subtask(req: CompleteSubtaskRequest):
             user_data = user_update_res.data[0]
 
     return{
-        "tasks": updated_task,
+        "task": updated_task,
         "task_fully_done": task_fully_done,
         "level_up": level_up,
         "user": user_data

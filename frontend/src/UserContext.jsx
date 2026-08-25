@@ -1,20 +1,19 @@
-import React, { createContext, useContext, UserProvider, useState } from "react";
+import React, { createContext, useContext, useState } from "react";
 
 const UserContext = createContext(null);
 
-export function UserProvider({children}) {
-    const [user, setUser] = useState(() =>{
+export function UserProvider({ children }) {
+    const [user, setUser] = useState(() => {
         const saved = localStorage.getItem("diva_user");
         return saved ? JSON.parse(saved) : null;
     });
 
     const updateUser = (patch) => {
-        setUser((prev) =>{
-            const next = { ...prev, ...patch};
-            localStorage.setItem("diiva_user", JSON.stringify(next));
+        setUser((prev) => {
+            const next = { ...prev, ...patch };
+            localStorage.setItem("diva_user", JSON.stringify(next));
             return next;
         });
-
     };
 
     const logout = () => {
@@ -23,7 +22,7 @@ export function UserProvider({children}) {
     };
 
     return (
-        <UserContext.Provider value = {{ user, upcdateUser, logout }}>
+        <UserContext.Provider value={{ user, updateUser, logout }}>
             {children}
         </UserContext.Provider>
     );
@@ -31,6 +30,6 @@ export function UserProvider({children}) {
 
 export function useUser() {
     const ctx = useContext(UserContext);
-    if (!ctx) throw new Error ("useUser must be used inside <UserProvider>");
+    if (!ctx) throw new Error("useUser must be used inside <UserProvider>");
     return ctx;
 }

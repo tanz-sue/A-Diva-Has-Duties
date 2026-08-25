@@ -1,6 +1,6 @@
 import React from "react";
 import NavBar from "./NavBar.jsx";
-import { WARRIOR_IMAGES } from "../warriorAssets.js"
+import { WARRIOR_IMAGES } from "../warriorAssets.js";
 import { MONSTER_IMAGES } from "../monsterAssets.js";
 
 const FIGHTER_IDS = ["witch_cat", "raccoon_baker", "penguin_wizard"];
@@ -16,26 +16,27 @@ export default function HowItWorks() {
                 </div>
 
                 <p className="text-lg leading-relaxed">
-                    Productivity shouldnt feel like a chore; 
-                    it shoudl feel like a victory.
+                    Productivity shouldn't feel like a chore; 
+                    it should feel like a victory.
                 </p>
+
                 <div className="flex flex-col md:flex-row-reverse items-center gap-10">
                     <div className="bg-butter rounded-2xl shadow-xl p-6 w-full md:w-80 flex-shrink-0">
                         <h3 className="font-display text-lg mb-4">Choose Your Diva Fighter</h3>
                         <div className="flex gap-3">
                             {FIGHTER_IDS.map((id) => (
-                                <div key={id} className="w-14 h-14 rounded-full bg-skyfog oveflow-hidden">
+                                <div key={id} className="w-14 h-14 rounded-full bg-skyfog overflow-hidden">
                                     <img src={WARRIOR_IMAGES[id]} alt="" className="w-full h-full object-cover" />
                                 </div>
                             ))}
                         </div>
                         <p className="text-xs text-center mt-4 bg-cream rounded-full py-2">Ready to enter battlefield</p>
                     </div>
-                    <p className="text-lg leading relaxed">
-                        A Diva Has Duties is gamified to-do list that transform your 
-                        overwhelming tasks into peic, bite-sized battles. Sompy type in 
-                        what you need to get done, and our A will automatically break it down 
-                        into mangeable steps.
+                    <p className="text-lg leading-relaxed">
+                        A Diva Has Duties is a gamified to-do list that transforms your 
+                        overwhelming tasks into fun, bite-sized battles. Simply type in 
+                        what you need to get done, and our AI will automatically break it down 
+                        into manageable steps.
                     </p>
                 </div>
 
@@ -47,15 +48,15 @@ export default function HowItWorks() {
                             <li>☐ Draft a mail</li>
                             <li>☐ Review the mail</li>
                         </ul>
-                        <p className="text-xs font-medium">Enegry Bar</p>
+                        <p className="text-xs font-medium">Energy Bar</p>
                         <div className="w-full h-2 bg-cream rounded-full mt-1 overflow-hidden">
                             <div className="h-full w-1/2 bg-ink/70"/>
                         </div>
                     </div>
                     <p className="text-lg leading-relaxed">
                         Choose your magical Diva Fighter, face off against procrastination
-                        monsters, and check off your subtask to drain their enegry bar.
-                        Level Up, conquer your day, and slay your to-do list.
+                        monsters, and check off your subtasks to drain their energy bar.
+                        Level up, conquer your day, and slay your to-do list.
                     </p>
                 </div>
             </div>

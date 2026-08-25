@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 export default function NavBar({ active }) {
     const linkClass = (name) =>
-        'hover:opacity-70 ${active === name ? "font-semibold underline" : ""}';
+        `hover:opacity-70 ${active === name ? "font-semibold underline" : ""}`;
 
     return(
         <nav className="flex items-center justify-between px-10 py-6">

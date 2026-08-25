@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useUser } from "../UserContext.jsx";
 
-export default function AppNavBar({ Active }) {
+export default function AppNavBar({ active }) {
     const navigate = useNavigate();
     const { logout } = useUser();
 

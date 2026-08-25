@@ -37,7 +37,7 @@ export default function CharacterSelect() {
                 <h1 className="font-display text-4xl mb-12">Choose Your Diva Fighter</h1>
                 <div className="flex justify-center gap-10 mb-12">
                     {FIGHTER_IDS.map((id) =>(
-                        <button key={id} onClick={() => setSelected(id)} onClick={`flex flex-col items-center gap-2 transtion ${selected === id? "scale-105": ""}`}>
+                        <button key={id} onClick={() => setSelected(id)} className={`flex flex-col items-center gap-2 transition ${selected === id ? "scale-105" : ""}`}>
                             <span className={`w-32 h-32 rounded-full bg-skyfog overlow-hidden ring-4 ${selected === id? "ring-butter-dark": "ring-transparent"}`}>
                                 <img src={WARRIOR_IMAGES[id]} alt={WARRIOR_LABELS[id]} className="w-full h-full object-cover"/>
                             </span>

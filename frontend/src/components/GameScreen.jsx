@@ -10,7 +10,7 @@ export default function GameScreen() {
     const navigate = useNavigate();
     const location = useLocation();
     const { user, updateUser } = useUser();
-    const [task, setTasks] = useState();
+    const [tasks, setTasks] = useState([]);
     const [activeTask, setActiveTask]= useState(null);
     const [draftTitle, setDraftTitle] = useState("");
     const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -27,7 +27,7 @@ export default function GameScreen() {
     useEffect(() => {
         const resumeTaskId = location.state?.resumeTaskId;
         if( resumeTaskId && tasks.length >0) {
-            const match = tasks.find((t) => t.task_id === resumeTaskId);
+            const match = tasks.find((t) => t.id === resumeTaskId);
             if (match) setActiveTask(match);
         }
     }, [tasks, location.state]);
@@ -46,9 +46,9 @@ export default function GameScreen() {
         refreshTasks();
     }
 
-    async function handleToggleSubtask(e) {
+    async function handleToggleSubtask(index) {
         if (!activeTask || activeTask.subtasks[index].done) return;
-        const result = await api.completeSubtask(activeTask.task_id, index);
+        const result = await api.completeSubtask(activeTask.id, index);
         setActiveTask(result.task);
         updateUser(result.user);
         refreshTasks();
@@ -71,14 +71,14 @@ export default function GameScreen() {
                     </div>
 
                     <p className="text-xs font-semibold mb-1">Menu</p>
-                    <button onClick={() => setActiveTask(null)} className="w-full text-left bg-cream rounded px-3 py-2 mb-6 text-sm">Crete New Task</button>
+                    <button onClick={() => setActiveTask(null)} className="w-full text-left bg-cream rounded px-3 py-2 mb-6 text-sm">Create New Task</button>
 
                     <p className="text-xs font-semibold mb-1">Recent</p>
                     <ul className="text-sm space-y-2">
                         {tasks.map((t) => {
                             const finished = t.energy === 0;
                             return (
-                                <li key = {t.task_id} className="bg-cream/60 rounded-lg px-3 py-2 flex items-center justify-between gap-2">
+                                <li key = {t.id} className="bg-cream/60 rounded-lg px-3 py-2 flex items-center justify-between gap-2">
                                     <button onClick={() => setActiveTask(t)} className="text-left flex-1 min-w-0">
                                         <p className="truncate">{t.title}</p>
                                         <p className={`text-xs ${finished ? "opacity-60" : "font-medium"}`}></p>
@@ -104,11 +104,11 @@ export default function GameScreen() {
                 </div>
 
                 {levelUpBanner && (
-                    <div className="mx-10 mb-4 bg-butter-dark rounded-lg px-4 py-2 text-center font-mediumn flex items-center justify-center gap-2">
+                    <div className="mx-10 mb-4 bg-butter-dark rounded-lg px-4 py-2 text-center font-medium flex items-center justify-center gap-2">
                         {user.character && (
-                            <img src={WARRRIOR_IMAGES[user.character]} alt="" className="w-6 h-6 rounded-full object-cover"/>
+                            <img src={WARRIOR_IMAGES[user.character]} alt="" className="w-6 h-6 rounded-full object-cover"/>
                         )}
-                        Level up! Your now level {user.level}
+                        Level up! You're now level {user.level}
                     </div>
                 )}
 
@@ -125,7 +125,7 @@ export default function GameScreen() {
                 ): (
                     <div className="px-10 mt-10 flex flex-col md:flex-row gap-10 items-start">
                         <div>
-                            <img src={MONSTER_IMAGES[activeTask.monster.id]} alt={activeTask.monster.name} className="w-56 h-56 object contain mb-4 select-none"/>
+                            <img src={MONSTER_IMAGES[activeTask.monster.id]} alt={activeTask.monster.name} className="w-56 h-56 object-contain mb-4 select-none"/>
                             <p className="font-medium mb-1">Energy Bar</p>
                             <div className="w-72 h-3 bg-cream rounded-full overflow-hidden">
                                 <div className="h-full bg-ink/70 transition-all duration-500" style= {{width: `${activeTask.energy}%`}}/>
