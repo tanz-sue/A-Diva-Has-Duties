@@ -13,8 +13,6 @@ export default function NavBar({ active }) {
             <div className="flex gap-8 text-sm items-center">
                 <Link to="/" className= {linkClass("about")}>About</Link>
                 <Link to="/how-it-works" className={linkClass("how-it-works")}>How it Works</Link>
-                <Link to="/login" className={linkClass("login")}>Login</Link>
-                <Link to="/signup" className="bg-butter hover:bg-butter-dark transition rounded-full px-4 py-1.5 font medium">Sign Up</Link>
             </div>
         </nav>
     );
