@@ -9,6 +9,7 @@ export default {
                 "butter-dark": "#E4C878",
                 skyfog: "#AFC8E6",
                 ink: "#2B2620",
+                "skyfog-dark": "#7390BC"
             },
             fontFamily: {
                 display: ["'Playfair Display'", "serif"],
