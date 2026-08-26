@@ -13,10 +13,10 @@ export default function HowItWorks() {
 
                 <div className="flex flex-col md:flex-row items-center gap-16">
                     <div className="w-full md:w-1/2 flex justify-center">
-                        <div className="bg-skyfog-dark rounded-lg p-2 w-full max-w-md shadow-[12px_12px_0px_rgba(156,163,175,0.7)]">
-                            <div className=" bg-skyfog rounded-md p-8 h-full flex flex-col items-center">
-                                <h3 className="font-display text-xl mb-6">Choose your Diva Fighter</h3>
-                                <div className="bg-cream rounded-full italic px-6 py-3 text-center text-sm w-3/4 shadow-sm">
+                        <div className="bg-darkskyfog rounded-lg p-2 w-full max-w-md shadow-[12px_12px_0px_rgba(156,163,175,0.7)]">
+                            <div className=" bg-skyfog rounded-md pb-7 p-8 h-full flex flex-col items-center">
+                                <h3 className="font-display pt-9 text-xl mb-6">Hi Diva, Let's get started</h3>
+                                <div className="bg-cream rounded-full italic  mb-9 px-6 py-3 text-center text-sm w-3/4 shadow-sm">
                                     Enter Your Task
                                 </div>
                             </div>
@@ -30,7 +30,6 @@ export default function HowItWorks() {
                     </div>
                 </div>
 
-                {/* Row 2: Text (Left) + Fighter Card (Right) */}
                 <div className="flex flex-col-reverse md:flex-row items-center gap-16">
                     <div className="w-full md:w-1/2">
                         <p className="text-xl leading-relaxed">
@@ -59,26 +58,22 @@ export default function HowItWorks() {
                     </div>
                 </div>
 
-                {/* Row 3: Monster Card (Left) + Text (Right) */}
                 <div className="flex flex-col md:flex-row items-center gap-16">
                     <div className="w-full md:w-1/2 flex justify-center">
-                        <div className="bg-skyfog rounded-lg w-full max-w-lg overflow-hidden border border-black/5 shadow-[12px_12px_0px_rgba(156,163,175,0.7)]">
-                            {/* Window Top Bar */}
-                            <div className="bg-skyfog-dark h-6 w-full bg-black/10"></div>
-                            {/* Window Content */}
-                            <div className="p-8 flex gap-8">
+                        <div className="bg-darkskyfog rounded-lg p-2 w-full max-w-md shadow-[12px_12px_0px_rgba(156,163,175,0.7)]">
+                            <div className="bg-skyfog rounded-md pb-7 p-8 h-full flex flex-row items-start gap-6">
                                 <div className="w-1/3 flex flex-col items-center pt-2">
-                                    <img src={MONSTER_IMAGES.beetle_bug} alt="" className="w-24 h-24 object-contain mb-4 drop-shadow-md"/>
+                                    <img src={MONSTER_IMAGES.beetle_bug} alt="beetle_bug" className="w-24 h-24 object-contain mb-4 drop-shadow-md"/>
                                     <p className="text-xs font-medium w-full text-left mb-1">Energy Bar</p>
                                     <div className="w-full h-3 bg-cream rounded-full overflow-hidden shadow-inner">
-                                        <div className="h-full w-2/3 bg-ink/70"/>
+                                        <div className="h-full w-2/3 bg-darkskyfog/70"/>
                                     </div>
-                                    <p className="text-[8px] text-black/60 mt-2 text-center leading-tight">
-                                        Drain the energy bar entirely by successfully completing the mini tasks
+                                    <p className="text-[8px] text-black/60 mt-2 italic text-center leading-tight">
+                                        Drain the energy bar entirely by successfully completing the mini tasks 
                                     </p>
                                 </div>
                                 <div className="w-2/3">
-                                    <h3 className="font-display italic text-xl mb-4">Task to complete:</h3>
+                                    <h3 className="italic text-lg mb-4 font-display">Task to complete:</h3>
                                     <ul className="text-sm space-y-2">
                                         <li className="flex gap-2 items-start"><span className="text-cream text-lg leading-none">☐</span> Nomenclature & Functional Groups</li>
                                         <li className="flex gap-2 items-start"><span className="text-cream text-lg leading-none">☐</span> Stereochemistry & Isomerism</li>
@@ -97,7 +92,6 @@ export default function HowItWorks() {
                         </p>
                     </div>
                 </div>
-
             </div>
         </div>
     );
