@@ -274,7 +274,7 @@ def complete_subtask(req: CompleteSubtaskRequest):
 
     done_count = sum(1 for s in subtasks if s["done"]) 
     total = len(subtasks)
-    new_energy = max(0,round(100*(1-done_count)/total))  
+    new_energy = max(0,round(100*(total-done_count)/total))  
     task_fully_done = done_count == total
 
     updated_task_res = supabase.table("tasks").update({
