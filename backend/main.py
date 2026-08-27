@@ -9,10 +9,14 @@ from fastapi import FastAPI , HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from supabase import create_client, Client
 from pydantic import BaseModel
+from pathlib import Path
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
+BASE_DIR = Path(__file__).resolve().parent
+
+env_path = BASE_DIR / ".env"
+load_dotenv(dotenv_path=env_path)
 
 GEMINI_API_KEY=os.getenv("GEMINI_API_KEY")
 if GEMINI_API_KEY:
@@ -150,12 +154,15 @@ def signup(req: SignupRequest):
             "email":req.email,
             "password": req.password
         })
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Auth error: {str(e)}")
 
-        if auth_response.user:
-            user_id=auth_response.user.id
-        else:
-            raise HTTPException(status_code=400, detail="Sign Up Failed.")
+    if not auth_response.user:
+        raise HTTPException (status_code=400 , detail="Sign Up failed.")
+    
+    user_id=auth_response.user.id
 
+    try:
         supabase.table("users").insert({
             "id": user_id,
             "name": req.name,
@@ -165,34 +172,31 @@ def signup(req: SignupRequest):
             "tasks_done_this_level": 0,
             "last_defeated_monster":None,
         }).execute()
-
-        return{"user_id": user_id, "name": req.name, "level": 0}
-
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Errpr creating user:{str(e)}")
+        print(f"[CRITICAL ERROR] Database Insert failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Database errror:{str(e)}")
     
+    return{"user_id": user_id, "name": req.name, "level": 0}
 
 @app.post("/auth/login")
-def login(req:LoginRequest):
+def login(req: LoginRequest):
     try:
-        auth_response =supabase.auth.sign_in_with_password({
+        auth_response = supabase.auth.sign_in_with_password({
             "email": req.email,
             "password": req.password
         })
-
-        user_id = auth_response.user.id
-
-        user_record = supabase.table("users").select("*").eq("id",user_id).execute()
-
-        if not user_record.data:
-            raise HTTPException(status_code=404 , detail="User Profile not found")
-
-        user_record = user_record.data[0]
-
-        return{"user_id":user_id, **user_record}
-
     except Exception as e:
-        raise HTTPException(status_code=400 , detail="Invalid email or password")
+        raise HTTPException(status_code=400, detail="Invalid email or password")
+
+    user_id = auth_response.user.id
+    user_record = supabase.table("users").select("*").eq("id", user_id).execute()
+
+    if not user_record.data:
+        raise HTTPException(status_code=404, detail="User Profile not found in database. Please sign up again.")
+
+    user_record = user_record.data[0]
+
+    return {"user_id": user_id, **user_record}
 
 @app.get("/characters")
 def list_characters():
@@ -282,7 +286,10 @@ def complete_subtask(req: CompleteSubtaskRequest):
         "energy": new_energy,
     }).eq("id", req.task_id).execute()
 
-    updated_task = updated_task_res.data[0]
+    if not updated_task_res.data:
+        raise HTTPException (status_code=500, detail="Failed to update task in database.")
+
+    updated_task = user_update_res.data[0]
 
     level_up = False
     user_data = None
