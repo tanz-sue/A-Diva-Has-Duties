@@ -7,7 +7,7 @@ export default function AppNavBar({ active }) {
     const { logout } = useUser();
 
     const linkClass = (name) =>
-        `hover:opacity-70 ${active === name ? "font-semibold underline" : ""}`;
+        `hover:opacity-70 ${active === name ? "font-semibold" : ""}`;
 
     function handleLogout() {
         logout();

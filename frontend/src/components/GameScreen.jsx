@@ -12,6 +12,7 @@ export default function GameScreen() {
     const { user, updateUser } = useUser();
     const [tasks, setTasks] = useState([]);
     const [activeTask, setActiveTask]= useState(null);
+    const [pendingTask, setPendingTask] = useState(null);
     const [draftTitle, setDraftTitle] = useState("");
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [levelUpBanner, setLevelUpBanner] = useState(false);
@@ -42,7 +43,7 @@ export default function GameScreen() {
         if(!draftTitle.trim()) return;
         const task = await api.createTask(user.user_id, draftTitle.trim());
         setDraftTitle("");
-        setActiveTask(task);
+        setPendingTask(task);
         refreshTasks();
     }
 
@@ -59,6 +60,11 @@ export default function GameScreen() {
         }
     }
 
+    function handleLogout(){
+        logout();
+        navigate("/");
+    }
+
     if (!user) return null;
 
     return (
@@ -67,11 +73,11 @@ export default function GameScreen() {
                 <aside className="w-64 bg-butter border-r border-ink px-4 py-4 flex-shrink-0">
                     <div className="flex items-center justify-between mb-6">
                         <span className="font-display italic text-lg">A Diva Has Duties</span>
-                        <button onClick={() => setSidebarOpen(false)} className="text-sm">{"˂˂"}</button>
+                        <button onClick={() => setSidebarOpen(false)} className="text-sm">{"✘"}</button>
                     </div>
 
                     <p className="text-xs font-semibold mb-1">Menu</p>
-                    <button onClick={() => setActiveTask(null)} className="w-full text-left bg-cream rounded px-3 py-2 mb-6 text-sm">Create New Task</button>
+                    <button onClick={() => { setActiveTask(null); setPendingTask(null);}} className="w-full text-left bg-cream rounded px-3 py-2 mb-6 text-sm">Create New Task</button>
 
                     <p className="text-xs font-semibold mb-1">Recent</p>
                     <ul className="text-sm space-y-2">
@@ -79,12 +85,12 @@ export default function GameScreen() {
                             const finished = t.energy === 0;
                             return (
                                 <li key = {t.id} className="bg-cream/60 rounded-lg px-3 py-2 flex items-center justify-between gap-2">
-                                    <button onClick={() => setActiveTask(t)} className="text-left flex-1 min-w-0">
+                                    <button onClick={() => { setActiveTask(t); setPendingTask(null);}} className="text-left flex-1 min-w-0">
                                         <p className="truncate">{t.title}</p>
                                         <p className={`text-xs ${finished ? "opacity-60" : "font-medium"}`}></p>
                                     </button>
                                     { finished && (
-                                        <button onClick={() => setActiveTask(t)} className="text-xs bg-butter-dark rounded-full px-2 py-1 flex-shrink-0" title="Rejoin this battle">Rejoin</button>
+                                        <button onClick={() => {setActiveTask(t); setPendingTask(null);}} className="text-xs bg-butter-dark rounded-full px-2 py-1 flex-shrink-0" title="Rejoin this battle">Rejoin</button>
                                     )}
                                 </li>
                             );
@@ -93,38 +99,59 @@ export default function GameScreen() {
                 </aside>
             )}
 
-            <div className="flex-1">
-                <div className="flex items-center">
+            <div className="flex-1 flex-col h-screen">
+                <div className="flex item-center w-full px-10 py-6">
                     {!sidebarOpen && (
-                        <button onClick={() => setSidebarOpen(true)} className="text-sm pl-10 pt-6">{"˂˂"}</button>
+                        <button onClick={() => setSidebarOpen(true)} className="text-sm mr-6">{"三"}</button>
                     )}
+
                     <div className="flex-1">
-                        <AppNavBar active="home"/>
+                        <nav className="flex items-center justify-between px-10 py-6 border-ink">
+                            <div className="flex gap-8 text-sm">
+                                <button onClick={() => navigate("/")} className="hover:text-ink/70 transition">Home</button>
+                                <button onClick={() => navigate("/dashboard")} className="hover:text-ink/70 transition">Dashboard</button>
+                                <button onClick={handleLogout} className="hover: text-ink/70 transition">Log out</button>
+                            </div>
+                        </nav>
                     </div>
                 </div>
 
                 {levelUpBanner && (
                     <div className="mx-10 mb-4 bg-butter-dark rounded-lg px-4 py-2 text-center font-medium flex items-center justify-center gap-2">
-                        {user.character && (
+                        { user?.character && (
                             <img src={WARRIOR_IMAGES[user.character]} alt="" className="w-6 h-6 rounded-full object-cover"/>
                         )}
-                        Level up! You're now level {user.level}
+                        Level Up! You're now at level {user?.level}
                     </div>
                 )}
 
-                {!activeTask ? (
-                    <div className="px-10 mt-16 max-w-xl">
+                <div className="flex-1 flex flex-col justify-center items-center w-full pb-20">
+                    
+                    {pendingTask && !activeTask ? (
+                        <div className="text-center px-6 max-w-xl">
+                            <h2 className="font-display text-3xl mb-4">Task Generated!</h2>
+                            <div className="bg-skyfog rounded-2xl shadow-md p-6 mb-8">
+                                <p className="text-lg">Your task:</p>
+                                <p className="font-semibold text-2xl mt-2">{pendingTask.title}</p>
+                            </div>
+                            <button onClick={() => {setActiveTask(pendingTask); setPendingTask(null);}} 
+                            className="bg-butter hover:bg-butter-dark transition-all rounded-full px-8 py-3 shadow-lg hover:-translate-y-1">Enter the Battlefield</button>
+                        </div>
+                    ): !activeTask ? (
+
+                    <div className="px-10 mt-16 max-w-xl text-center">
                         <h1 className="font-display text-3xl mb-6">
                             Hi {user.name}, Let's get started
                         </h1>
-                        <form onSubmit={handleCreateTask}>
-                            <input value={draftTitle} onChange={(e) => setDraftTitle(e.target.value)} placeholder="Enter your task" className="w-full bg-cream rounded-xl px-5 py-4 italic shadow outline-none"/>
-                            <button type="submit" className="mt-4 bg-butter-dark rounded-full px-6 py-2 font-medium">Summon the monster</button>
+                        <form onSubmit={handleCreateTask} className="w-full flex flex-col items-center">
+                            <input value={draftTitle} onChange={(e) => setDraftTitle(e.target.value)} placeholder="Enter your task" className="w-full bg-cream rounded-xl px-5 py-4 italic shadow outline-none text-center"/>
+                            <button type="submit" className="mt-6 bg-butter hover:bg-butter-dark transition-all rounded-full px-8 py-3 font-medium shadow-lg hoevr:-translate-y-1">Summon the monster</button>
                         </form>
                     </div>
                 ): (
-                    <div className="px-10 mt-10 flex flex-col md:flex-row gap-10 items-start">
-                        <div>
+
+                    <div className="px-10 flex flex-col md:flex-row gap-10 items-start w-full max-w-5xl">
+                        <div className="flex-1 flex flex-col items-center text-center">
                             <img src={MONSTER_IMAGES[activeTask.monster.id]} alt={activeTask.monster.name} className="w-56 h-56 object-contain mb-4 select-none"/>
                             <p className="font-medium mb-1">Energy Bar</p>
                             <div className="w-72 h-3 bg-cream rounded-full overflow-hidden">
@@ -157,5 +184,6 @@ export default function GameScreen() {
                 )}
             </div>
         </div>
+    </div>
     );
 }

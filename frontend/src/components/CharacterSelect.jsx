@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../UserContext.jsx";
 import { api } from "../api.js";
+import AppNavBar from "./AppNavBar.jsx";
 import { WARRIOR_IMAGES, WARRIOR_LABELS } from "../warriorAssets.js";
 
 const FIGHTER_IDS = ["witch_cat", "raccoon_baker", "penguin_wizard"];
@@ -26,13 +27,7 @@ export default function CharacterSelect() {
 
     return (
         <div className="min-h-screen bg-diva-gradient">
-            <nav className="flex items-center justify-between px-10 py-6 border-ink">
-                <span className="font-display italic text-xl underline">A Diva Has Duties</span>
-                <div className="flex gap-8 text-sm">
-                    <span>{user?.name || "User's name"}</span>
-                </div>
-            </nav>
-
+            <AppNavBar/>
             <div className="text-center mt-16 px-6">
                 <h1 className="font-display text-4xl mb-12">Choose Your Diva Fighter</h1>
                 <div className="flex justify-center gap-10 mb-12">
@@ -48,7 +43,7 @@ export default function CharacterSelect() {
                 </div>
 
                 <button onClick={handleConfirm} disabled={!selected || loading} className="bg-cream border-ink rounded-full px-8 py-3 font-medium shadow disabled: opacity-40">
-                    {loading ? "Entering...": "Ready to enter battlefield" }
+                    {loading ? "Entering...": "Ready to get some tasks done" }
                 </button>
             </div>
         </div>
