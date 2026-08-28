@@ -28,18 +28,16 @@ export default function GameScreen() {
     async function handleCreateTask(e) {
         e.preventDefault();
         if (!draftTitle.trim()) return;
-    
+        
         const task = await api.createTask(user.user_id, draftTitle.trim());
         setDraftTitle("");
-        
         setPreviewTask(task);
         refreshTasks();
     }
 
     function handleEnterBattlefield() {
         if (!previewTask) return;
-        // Navigate to the Battlefield view passing current task state
-        navigate("/battlefield", { state: { activeTask: previewTask } });
+        navigate("/Battlefield", { state: { activeTask: previewTask } });
     }
 
     function handleLogout() {
@@ -51,7 +49,6 @@ export default function GameScreen() {
 
     return (
         <div className="min-h-screen bg-diva-gradient flex">
-            {/* Sidebar */}
             {sidebarOpen && (
                 <aside className="w-64 bg-butter border-r border-ink px-4 py-4 flex-shrink-0">
                     <div className="flex items-center justify-between mb-6">
@@ -60,11 +57,8 @@ export default function GameScreen() {
                     </div>
 
                     <p className="text-xs font-semibold mb-1">Menu</p>
-                    <button 
-                        onClick={() => setPreviewTask(null)} 
-                        className="w-full text-left bg-cream rounded px-3 py-2 mb-6 text-sm hover:bg-butter-dark transition"
-                    >
-                        Create New Task
+                    <button onClick={() => setPreviewTask(null)} 
+                        className="w-full text-left bg-cream rounded px-3 py-2 mb-6 text-sm hover:bg-butter-dark transition">Create New Task
                     </button>
 
                     <p className="text-xs font-semibold mb-1">Recent Tasks</p>
@@ -105,44 +99,22 @@ export default function GameScreen() {
                                 Hi {user.name}, Let's get started
                             </h1>
                             <form onSubmit={handleCreateTask} className="w-full flex flex-col items-center">
-                                <input 
-                                    value={draftTitle} 
-                                    onChange={(e) => setDraftTitle(e.target.value)} 
-                                    placeholder="Enter your task" 
-                                    className="w-full bg-cream rounded-xl px-5 py-4 italic shadow outline-none text-center text-lg"
-                                />
-                                <button 
-                                    type="submit" 
-                                    className="mt-6 bg-butter hover:bg-butter-dark transition-all rounded-full px-8 py-3 font-medium shadow-lg hover:-translate-y-0.5"
-                                >
+                                <input value={draftTitle} onChange={(e) => setDraftTitle(e.target.value)} placeholder="Enter your task" 
+                                    className="w-full bg-cream rounded-xl px-5 py-4 italic shadow outline-none text-center text-lg"/>
+                                <button type="submit" 
+                                    className="mt-6 bg-butter hover:bg-butter-dark transition-all rounded-full px-8 py-3 font-medium shadow-lg hover:-translate-y-0.5">
                                     Summon the monster
                                 </button>
                             </form>
                         </div>
                     ) : (
+        
                         <div className="flex flex-col items-center w-full max-w-5xl">
                             <div className="flex flex-col md:flex-row gap-10 items-center justify-center w-full mb-8">
-                                <div className="flex-1 flex flex-col items-center text-center">
-                                    <img 
-                                        src={MONSTER_IMAGES[previewTask.monster.id]} 
-                                        alt={previewTask.monster.name} 
-                                        className="w-56 h-56 object-contain mb-4 select-none"
-                                    />
-                                    <p className="font-medium mb-1">Energy Bar</p>
-                                    <div className="w-72 h-4 bg-cream rounded-full overflow-hidden border border-ink/20">
-                                        <div 
-                                            className="h-full bg-skyfog-dark bg-opacity-80 transition-all duration-500" 
-                                            style={{ width: `${previewTask.energy}%` }}
-                                        />
-                                    </div>
-                                    <p className="text-xs italic mt-2 max-w-xs opacity-75">
-                                        Make the energy bar zero to defeat the monster by completing the mini tasks
-                                    </p>
-                                </div>
-
+                                {/* Right Side: Mini Task breakdown */}
                                 <div className="bg-skyfog/90 backdrop-blur rounded-2xl shadow-xl p-8 w-full max-w-md border border-ink/10">
                                     <h2 className="font-display italic text-3xl mb-6">Task to complete:</h2>
-                                    <ul className="space-y-4 text-left">
+                                    <ul className="space-y-4 text-center">
                                         {previewTask.subtasks?.map((s, i) => (
                                             <li key={i} className="flex items-center gap-3 text-lg">
                                                 <span className="w-4 h-4 bg-cream border border-ink/40 rounded-xs flex-shrink-0" />

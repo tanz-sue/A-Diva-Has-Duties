@@ -269,16 +269,17 @@ def complete_subtask(req: CompleteSubtaskRequest):
         raise HTTPException(status_code=404, detail="Task not found")
 
     task = task_res.data[0]
-    subtasks = task["subtasks"]
+    subtasks = task["subtasks"] or []
 
-    if not (0<= req.subtask_index < len(subtasks)):
-        raise HTTPException(status_code=400, detail="Bad subtask index") 
+    if not (0 <= req.subtask_index < len(subtasks)):
+        raise HTTPException(status_code=400, detail="Bad subtask index")
 
+    already_done = bool(subtasks[req.subtask_index].get("done"))
     subtasks[req.subtask_index]["done"] = True
 
-    done_count = sum(1 for s in subtasks if s["done"]) 
     total = len(subtasks)
-    new_energy = max(0,round(100*(total-done_count)/total))  
+    done_count = sum(1 for s in subtasks if s.get("done"))
+    new_energy = max(0, round(100 * (total - done_count) / total)) if total else 0
     task_fully_done = done_count == total
 
     updated_task_res = supabase.table("tasks").update({
@@ -287,41 +288,43 @@ def complete_subtask(req: CompleteSubtaskRequest):
     }).eq("id", req.task_id).execute()
 
     if not updated_task_res.data:
-        raise HTTPException (status_code=500, detail="Failed to update task in database.")
+        raise HTTPException(status_code=500, detail="Failed to update task in database.")
 
-    updated_task = user_update_res.data[0]
+    updated_task = updated_task_res.data[0] 
 
     level_up = False
     user_data = None
 
-    if task_fully_done:
+    if task_fully_done and not already_done:
         user_res = supabase.table("users").select("*").eq("id", task["user_id"]).execute()
 
         if user_res.data:
             user = user_res.data[0]
-            new_tasks_done = user["tasks_done_this_level"]+1
+            new_tasks_done = user["tasks_done_this_level"] + 1
             current_level = user["level"]
-
             required = tasks_required_for_level(current_level)
 
-            if new_tasks_done >=required:
-                current_level+=1
-                new_tasks_done =0
+            if new_tasks_done >= required:
+                current_level += 1
+                new_tasks_done = 0
                 level_up = True
 
             user_update_res = supabase.table("users").update({
                 "level": current_level,
-                "tasks_done_this_level": new_tasks_done
+                "tasks_done_this_level": new_tasks_done,
+                "last_defeated_monster": task.get("monster"),
             }).eq("id", user["id"]).execute()
 
-            user_data = user_update_res.data[0]
+            if user_update_res.data:
+                user_data = user_update_res.data[0]
+                user_data["user_id"] = user_data["id"]
 
-    return{
+    return {
         "task": updated_task,
         "task_fully_done": task_fully_done,
         "level_up": level_up,
-        "user": user_data
-        }
+        "user": user_data,
+    }
 
 @app.get(("/user/{user_id}/progress"))
 def get_progress(user_id: str):

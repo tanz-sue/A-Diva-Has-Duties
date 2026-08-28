@@ -7,10 +7,11 @@ import SignUp from "./components/SignUp.jsx";
 import HowItWorks from "./components/HowItWorks.jsx";
 import CharacterSelect from "./components/CharacterSelect.jsx";
 import GameScreen from "./components/GameScreen.jsx";
+import Battlefield from "./components/Battlefield.jsx";
 import Dashboard from "./components/Dashboard.jsx";
 
-export default function App(){
-    return(
+export default function App() {
+    return (
         <UserProvider>
             <Routes>
                 <Route path="/" element={<LandingPage />} />
@@ -19,6 +20,8 @@ export default function App(){
                 <Route path="/how-it-works" element={<HowItWorks />} />
                 <Route path="/character-select" element={<CharacterSelect />} />
                 <Route path="/game" element={<GameScreen />} />
+                <Route path="/battlefield" element={<Battlefield />} />
+                <Route path="/battlefield/:taskId" element={<Battlefield />} />
                 <Route path="/dashboard" element={<Dashboard />} />
             </Routes>
         </UserProvider>
