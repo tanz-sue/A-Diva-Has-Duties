@@ -75,6 +75,41 @@ export default function GameScreen() {
         }
     }
 
+    function computeEnergy(subtasks) {
+        const total = subtasks.length || 1;
+        const done = subtasks.filter((s) => s.done).length;
+        return Math.round((100 * (total - done)) / total);
+    }
+
+    async function toggleSubtask(index) {
+        if (!previewTask) return;
+
+        const subtasks = previewTask.subtasks.map((s, i) =>
+            i === index ? { ...s, done: !s.done } : s
+        );
+        const updated = { ...previewTask, subtasks, energy: computeEnergy(subtasks) };
+
+        // optimistic update so the UI (and the energy bar) reacts instantly
+        setPreviewTask(updated);
+        setTasks((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
+
+        try {
+            if (typeof api.updateTask === "function") {
+                await api.updateTask(user.user_id, updated.id, {
+                    subtasks: updated.subtasks,
+                    energy: updated.energy,
+                });
+            } else if (typeof api.toggleSubtask === "function") {
+                await api.toggleSubtask(user.user_id, updated.id, index);
+            }
+        } catch (err) {
+            setError(err.message || "Could not save that mini task.");
+            // roll back on failure
+            setPreviewTask(previewTask);
+            setTasks((prev) => prev.map((t) => (t.id === previewTask.id ? previewTask : t)));
+        }
+    }
+
     function handleEnterBattlefield(task) {
         const target = task || previewTask;
         if (!target) return;
@@ -185,11 +220,18 @@ export default function GameScreen() {
                                     <h2 className="font-display italic text-3xl mb-6">Task to complete:</h2>
                                     <ul className="space-y-4 text-left">
                                         {previewTask.subtasks.map((s, i) => (
-                                            <li key={i} className="flex items-center gap-3 text-lg">
-                                                <span className={`w-4 h-4 border border-ink/40 rounded-xs flex-shrink-0 ${ s.done ? "bg-ink/70" : "bg-cream" }`}/>
-                                                <span className={s.done ? "line-through opacity-60" : ""}>
-                                                    {s.text}
-                                                </span>
+                                            <li key={i}>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => toggleSubtask(i)}
+                                                    aria-pressed={s.done}
+                                                    className="w-full flex items-center gap-3 text-lg text-left cursor-pointer rounded-lg px-1 py-1 hover:bg-cream/50 transition"
+                                                >
+                                                    <span className={`w-4 h-4 border border-ink/40 rounded-xs flex-shrink-0 ${ s.done ? "bg-ink/70" : "bg-cream" }`}/>
+                                                    <span className={s.done ? "line-through opacity-60" : ""}>
+                                                        {s.text}
+                                                    </span>
+                                                </button>
                                             </li>
                                         ))}
                                     </ul>
