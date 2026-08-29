@@ -37,7 +37,7 @@ except Exception as e:
 
 app = FastAPI(title="A Diva Has Duties API")
 
-FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "http://localhost:5173")
+FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "https://a-diva-has-duties-1.onrender.com")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[FRONTEND_ORIGIN],
