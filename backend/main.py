@@ -1,31 +1,34 @@
 import json
 import random
-import uuid
+import re
 from typing import Optional
 
 from google import genai
 from google.genai import types
-from fastapi import FastAPI , HTTPException
+from fastapi import FastAPI, HTTPException, Header, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from supabase import create_client, Client
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 from pathlib import Path
 from dotenv import load_dotenv
 import os
+import jwt
+from jwt.exceptions import InvalidTokenError
 
 BASE_DIR = Path(__file__).resolve().parent
 
 env_path = BASE_DIR / ".env"
 load_dotenv(dotenv_path=env_path)
 
-GEMINI_API_KEY=os.getenv("GEMINI_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 if GEMINI_API_KEY:
     gemini_client = genai.Client(api_key=GEMINI_API_KEY)
 else:
-    gemini_client=None
+    gemini_client = None
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+SUPABASE_JWT_SECRET = os.getenv("SUPABASE_JWT_SECRET") # Added for PyJWT Auth
 
 if SUPABASE_KEY:
     print(f"[DEBUG] SUPABASE_KEY loaded (length: {len(SUPABASE_KEY)}, prefix: {SUPABASE_KEY[:10]}...)")
@@ -60,16 +63,46 @@ MONSTERS = [
     {"id": "inbox_hydra", "name": "Inbox Hydra"},
 ]
 
-def tasks_required_for_level(level:int)->int:
-    if level<=10:
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+class TokenPayload(BaseModel):
+    sub: str
+
+async def get_current_user_id(authorization: str = Header(...)) -> str:
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing bearer token")
+
+    token = authorization.removeprefix("Bearer ").strip()
+
+    if not SUPABASE_JWT_SECRET:
+        raise HTTPException(status_code=500, detail="Server configuration error: Missing JWT secret")
+
+    try:
+        unvalidated_payload = jwt.decode(
+            token,
+            SUPABASE_JWT_SECRET,
+            algorithms=["HS256"],
+            audience="authenticated",
+        )
+        payload = TokenPayload(**unvalidated_payload)
+    except InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    except ValidationError:
+        raise HTTPException(status_code=401, detail="Token missing subject or malformed")
+
+    return payload.sub
+
+def tasks_required_for_level(level: int) -> int:
+    if level <= 10:
         return 2
-    elif level <=50:
+    elif level <= 50:
         return 4
     else:
-        tier = (level-51)//50
-        required = 6 + tier *2
-        return min(required,20)
-
+        tier = (level - 51) // 50
+        required = 6 + tier * 2
+        return min(required, 20)
 
 class SignupRequest(BaseModel):
     name: str
@@ -92,7 +125,6 @@ class CompleteSubtaskRequest(BaseModel):
     task_id: str
     subtask_index: int
 
-
 SUBTASK_SYSTEM_PROMPT = """You break a single task or schedule dump into a
 short checklist of concrete subtasks for a to-do app called "A Diva Has 
 Duties". The user might type one task ("prep chemistry final") or a messy
@@ -108,18 +140,17 @@ own subtask rather than inventing generic planning steps.
 - Respond with Only a JSON array of strings. Example:
 ["Draft a mail", "Review the mail" , "send for second review to senior manage"]"""
 
-def _fallback_subtasks(title:str)-> list[str]:
+def _fallback_subtasks(title: str) -> list[str]:
     return [
         f"Plan out: {title}",
         f"Do first pass on: {title}",
         f"Review/ Clean up: {title}",
     ]
 
-
-def generate_subtasks(title:str)-> list[str]:
+def generate_subtasks(title: str) -> list[str]:
     title = title.strip()
     if not title:
-        raise HTTPException(400 , "Task title can't be empty")
+        raise HTTPException(400, "Task title can't be empty")
 
     if not gemini_client:
         return _fallback_subtasks(title)
@@ -137,7 +168,7 @@ def generate_subtasks(title:str)-> list[str]:
         raw = response.text.strip()
         subtasks = json.loads(raw)
 
-        subtasks=[str(s).strip() for s in subtasks if str(s).strip()]
+        subtasks = [str(s).strip() for s in subtasks if str(s).strip()]
 
         if not subtasks:
             return _fallback_subtasks(title)
@@ -151,16 +182,16 @@ def generate_subtasks(title:str)-> list[str]:
 def signup(req: SignupRequest):
     try:
         auth_response = supabase.auth.sign_up({
-            "email":req.email,
+            "email": req.email,
             "password": req.password
         })
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Auth error: {str(e)}")
 
     if not auth_response.user:
-        raise HTTPException (status_code=400 , detail="Sign Up failed.")
+        raise HTTPException(status_code=400, detail="Sign Up failed.")
     
-    user_id=auth_response.user.id
+    user_id = auth_response.user.id
 
     try:
         supabase.table("users").insert({
@@ -170,13 +201,13 @@ def signup(req: SignupRequest):
             "character": "None",
             "level": 0,
             "tasks_done_this_level": 0,
-            "last_defeated_monster":None,
+            "last_defeated_monster": None,
         }).execute()
     except Exception as e:
         print(f"[CRITICAL ERROR] Database Insert failed: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Database errror:{str(e)}")
     
-    return{"user_id": user_id, "name": req.name, "level": 0}
+    return {"user_id": user_id, "name": req.name, "level": 0}
 
 @app.post("/auth/login")
 def login(req: LoginRequest):
@@ -196,31 +227,41 @@ def login(req: LoginRequest):
 
     user_record = user_record.data[0]
 
-    return {"user_id": user_id, **user_record}
+    return {
+        "user_id": user_id, 
+        "access_token": auth_response.session.access_token,
+        **user_record
+    }
 
 @app.get("/characters")
 def list_characters():
     return {"characters": CHARACTERS}
 
 @app.post("/user/character")
-def choose_character(req:CharacterChoice):
+def choose_character(req: CharacterChoice, current_user_id: str = Depends(get_current_user_id)):
+    if req.user_id != current_user_id:
+        raise HTTPException(status_code=403, detail="Not authorized to modify this user")
+        
     if req.character not in CHARACTERS:
-        raise HTTPException(400,"Unknown Character")
+        raise HTTPException(400, "Unknown Character")
     try:
         response = supabase.table("users").update({
             "character": req.character
-        }).eq("id",req.user_id).execute()
+        }).eq("id", req.user_id).execute()
 
         if not response.data:
-            raise HTTPException(status_code=400,detail="User not found")
+            raise HTTPException(status_code=400, detail="User not found")
 
-        return {"ok": True , "character": req.character}
+        return {"ok": True, "character": req.character}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error:{str(e)}")
 
 @app.post("/tasks")
-def create_task(req:NewTaskRequest):
+def create_task(req: NewTaskRequest, current_user_id: str = Depends(get_current_user_id)):
+    if req.user_id != current_user_id:
+        raise HTTPException(status_code=403, detail="Not authorized to create tasks for this user")
+
     user_res = supabase.table("users").select("*").eq("id", req.user_id).execute()
 
     if not user_res.data:
@@ -233,38 +274,41 @@ def create_task(req:NewTaskRequest):
         insert_res = supabase.table("tasks").insert({
             "user_id": req.user_id,
             "title": req.title,
-            "subtasks": [{"text":s, "done":False} for s in subtask_list],
+            "subtasks": [{"text": s, "done": False} for s in subtask_list],
             "monster": monster,
-            "energy":100
+            "energy": 100
         }).execute()
 
         if not insert_res.data:
-            raise HTTPException(status_code=500 , detail="Failed to create task.")
+            raise HTTPException(status_code=500, detail="Failed to create task.")
 
-        return insert_res.data[0] # contains newly generated task ID
+        return insert_res.data[0]
 
     except Exception as e:
-        raise HTTPException(status_code=500,detail=f"Database error: {str(e)}" )
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 
 @app.get("/tasks/{task_id}")
-def get_task(task_id:str):
-    response = supabase.table("tasks").select("*").eq("id", task_id).execute()
+def get_task(task_id: str, current_user_id: str = Depends(get_current_user_id)):
+    response = supabase.table("tasks").select("*").eq("id", task_id).eq("user_id", current_user_id).execute()
 
     if not response.data:
-        raise HTTPException( status_code=404 ,detail="Task not found")
+        raise HTTPException(status_code=404, detail="Task not found")
 
     return response.data[0]
 
 @app.get("/tasks")
-def list_tasks(user_id: str):
-    response = supabase.table("tasks").select("*").eq("user_id",user_id).execute()
+def list_tasks(user_id: str, current_user_id: str = Depends(get_current_user_id)):
+    if user_id != current_user_id:
+        raise HTTPException(status_code=403, detail="Not authorized to view these tasks")
+
+    response = supabase.table("tasks").select("*").eq("user_id", user_id).execute()
 
     return {"tasks": response.data}
 
 @app.post("/tasks/complete_subtask")
-def complete_subtask(req: CompleteSubtaskRequest):
-    task_res = supabase.table("tasks").select("*").eq("id", req.task_id).execute()
+def complete_subtask(req: CompleteSubtaskRequest, current_user_id: str = Depends(get_current_user_id)):
+    task_res = supabase.table("tasks").select("*").eq("id", req.task_id).eq("user_id", current_user_id).execute()
     if not task_res.data:
         raise HTTPException(status_code=404, detail="Task not found")
 
@@ -326,8 +370,11 @@ def complete_subtask(req: CompleteSubtaskRequest):
         "user": user_data,
     }
 
-@app.get(("/user/{user_id}/progress"))
-def get_progress(user_id: str):
+@app.get("/user/{user_id}/progress")
+def get_progress(user_id: str, current_user_id: str = Depends(get_current_user_id)):
+    if user_id != current_user_id:
+        raise HTTPException(status_code=403, detail="Not authorized to view this progress")
+
     response = supabase.table("users").select("*").eq("id", user_id).execute()
 
     if not response.data:
@@ -335,11 +382,11 @@ def get_progress(user_id: str):
 
     user = response.data[0]
 
-    return{
+    return {
         **user,
         "tasks_required_this_level": tasks_required_for_level(user["level"])
     }
 
 @app.get("/")
 def root():
-    return {"status":"A Diva Has Duties API is running"}
+    return {"status": "A Diva Has Duties API is running"}

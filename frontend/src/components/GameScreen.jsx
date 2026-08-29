@@ -1,138 +1,169 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "../UserContext.jsx";
-import { api } from "../api.js";
-import { MONSTER_IMAGES } from "../monsterAssets.js";
+import { Swords, Trash2 } from "lucide-react";
+import { useQuests } from "../QuestContent";
+import { MONSTER_IMAGES } from "../monsterAssests.js";
+import AppNavBar from "./AppNavBar";
 
 export default function GameScreen() {
-    const navigate = useNavigate();
-    const { user, logout } = useUser();
-    const [tasks, setTasks] = useState([]);
-    const [draftTitle, setDraftTitle] = useState("");
-    const [previewTask, setPreviewTask] = useState(null);
-    const [sidebarOpen, setSidebarOpen] = useState(true);
-    
-    useEffect(() => {
-        if (!user) {
-            navigate("/login");
-            return;
-        }
-        refreshTasks();
-    }, [user]);
+  const [input, setInput] = useState("");
+  const [creating, setCreating] = useState(false);
+  const navigate = useNavigate();
+  const {
+    quests,
+    activeQuestId,
+    setActiveQuestId,
+    createQuest,
+    deleteQuest,
+    getQuest,
+    questProgress,
+  } = useQuests();
 
-    async function refreshTasks() {
-        const { tasks } = await api.listTasks(user.user_id);
-        setTasks(tasks);
+  const activeQuest = activeQuestId ? getQuest(activeQuestId) : null;
+
+  async function handleCreate(e) {
+    e.preventDefault();
+    const title = input.trim();
+    if (!title || creating) return;
+    setCreating(true);
+    try {
+      await createQuest(title);
+      setInput("");
+    } finally {
+      setCreating(false);
     }
+  }
 
-    async function handleCreateTask(e) {
-        e.preventDefault();
-        if (!draftTitle.trim()) return;
-        
-        const task = await api.createTask(user.user_id, draftTitle.trim());
-        setDraftTitle("");
-        setPreviewTask(task);
-        refreshTasks();
-    }
+  function enterBattlefield(questId) {
+    setActiveQuestId(questId);
+    navigate(`/battlefield/${questId}`);
+  }
 
-    function handleEnterBattlefield() {
-        if (!previewTask) return;
-        navigate("/Battlefield", { state: { activeTask: previewTask } });
-    }
+  function handleDelete(questId) {
+    deleteQuest(questId);
+  }
 
-    function handleLogout() {
-        logout();
-        navigate("/");
-    }
+  return (
+    <div className="min-h-screen bg-[#f2e2ae]">
+      <Header />
 
-    if (!user) return null;
+      <main className="max-w-3xl mx-auto px-4 pb-16">
+        <h2 className="font-serif italic text-4xl text-[#3a3226] mb-3">
+          What are we defeating today?
+        </h2>
+        <p className="text-[#5b5342] mb-6 max-w-xl">
+          Type a task. It gets broken into mini quests and a monster is assigned to
+          guard it. Each mini quest you tick drains the monster&apos;s energy.
+        </p>
 
-    return (
-        <div className="min-h-screen bg-diva-gradient flex">
-            {sidebarOpen && (
-                <aside className="w-64 bg-butter border-r border-ink px-4 py-4 flex-shrink-0">
-                    <div className="flex items-center justify-between mb-6">
-                        <span className="font-display italic text-lg">A Diva Has Duties</span>
-                        <button onClick={() => setSidebarOpen(false)} className="text-sm">{"✘"}</button>
-                    </div>
+        <form onSubmit={handleCreate} className="flex gap-3 mb-8">
+          <input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="e.g. Draft the client email"
+            className="flex-1 rounded-lg px-4 py-3 bg-[#faf3d9] border border-[#e3d5a0] text-[#3a3226] placeholder:text-[#9c916f] focus:outline-none focus:ring-2 focus:ring-[#7c93c8]"
+          />
+          <button
+            type="submit"
+            className="rounded-lg px-6 py-3 bg-[#8b8378] text-white font-medium hover:bg-[#777065] transition"
+          >
+            Create quest
+          </button>
+        </form>
 
-                    <p className="text-xs font-semibold mb-1">Menu</p>
-                    <button onClick={() => setPreviewTask(null)} 
-                        className="w-full text-left bg-cream rounded px-3 py-2 mb-6 text-sm hover:bg-butter-dark transition">Create New Task
-                    </button>
-
-                    <p className="text-xs font-semibold mb-1">Recent Tasks</p>
-                    <ul className="text-sm space-y-2">
-                        {tasks.map((t) => {
-                            const finished = t.energy === 0;
-                            return (
-                                <li key={t.id} className="bg-cream/60 rounded-lg px-3 py-2 flex items-center justify-between gap-2">
-                                    <button onClick={() => setPreviewTask(t)} className="text-left flex-1 min-w-0">
-                                        <p className="truncate font-medium">{t.title}</p>
-                                    </button>
-                                    {finished && (
-                                        <span className="text-xs opacity-60 italic">Defeated</span>
-                                    )}
-                                </li>
-                            );
-                        })}
-                    </ul>
-                </aside>
-            )}
-
-            <div className="flex-1 flex flex-col h-screen overflow-y-auto">
-                <nav className="flex items-center justify-between px-10 py-6 border-b border-ink/10">
-                    {!sidebarOpen && (
-                        <button onClick={() => setSidebarOpen(true)} className="text-sm font-bold mr-6">{"☰"}</button>
-                    )}
-                    <div className="flex gap-8 text-sm font-medium ml-auto">
-                        <button onClick={() => navigate("/")} className="hover:text-ink/70 transition">Home</button>
-                        <button onClick={() => navigate("/dashboard")} className="hover:text-ink/70 transition">Dashboard</button>
-                        <button onClick={handleLogout} className="hover:text-ink/70 transition">Log out</button>
-                    </div>
-                </nav>
-
-                <div className="flex-1 flex flex-col justify-center items-center w-full pb-10 px-6">
-                    {!previewTask ? (
-                        <div className="px-10 mt-12 max-w-xl text-center w-full">
-                            <h1 className="font-display text-4xl mb-6">
-                                Hi {user.name}, Let's get started
-                            </h1>
-                            <form onSubmit={handleCreateTask} className="w-full flex flex-col items-center">
-                                <input value={draftTitle} onChange={(e) => setDraftTitle(e.target.value)} placeholder="Enter your task" 
-                                    className="w-full bg-cream rounded-xl px-5 py-4 italic shadow outline-none text-center text-lg"/>
-                                <button type="submit" 
-                                    className="mt-6 bg-butter hover:bg-butter-dark transition-all rounded-full px-8 py-3 font-medium shadow-lg hover:-translate-y-0.5">
-                                    Summon the monster
-                                </button>
-                            </form>
-                        </div>
-                    ) : (
-        
-                        <div className="flex flex-col items-center w-full max-w-5xl">
-                            <div className="flex flex-col md:flex-row gap-10 items-center justify-center w-full mb-8">
-                                {/* Right Side: Mini Task breakdown */}
-                                <div className="bg-skyfog/90 backdrop-blur rounded-2xl shadow-xl p-8 w-full max-w-md border border-ink/10">
-                                    <h2 className="font-display italic text-3xl mb-6">Task to complete:</h2>
-                                    <ul className="space-y-4 text-center">
-                                        {previewTask.subtasks?.map((s, i) => (
-                                            <li key={i} className="flex items-center gap-3 text-lg">
-                                                <span className="w-4 h-4 bg-cream border border-ink/40 rounded-xs flex-shrink-0" />
-                                                <span>{s.text}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <button onClick={handleEnterBattlefield}
-                                className="bg-butter hover:bg-butter-dark font-medium text-lg transition-all rounded-full px-10 py-4 shadow-xl hover:-translate-y-1 active:translate-y-0">
-                                Enter the Battlefield
-                            </button>
-                        </div>
-                    )}
-                </div>
+        {activeQuest && (
+          <div className="rounded-2xl p-6 mb-10 flex items-center justify-between bg-gradient-to-br from-[#8fa3d6] to-[#6c7fb0] shadow-md">
+            <div>
+              <p className="uppercase text-xs tracking-wide text-[#e4e9f7] mb-1">
+                Battle in progress
+              </p>
+              <p className="font-serif italic text-2xl text-white mb-1">
+                {activeQuest.title}
+              </p>
+              <p className="text-sm text-[#e4e9f7]">
+                {questProgress(activeQuest).done} of {questProgress(activeQuest).total}{" "}
+                mini quests done · {questProgress(activeQuest).energyLeft}% energy left
+              </p>
             </div>
+            <button
+              onClick={() => navigate(`/battlefield/${activeQuest.id}`)}
+              className="flex items-center gap-2 rounded-lg px-4 py-2 bg-[#faf3d9] text-[#3a3226] font-medium hover:bg-[#f0e6c4] transition shrink-0"
+            >
+              <Swords size={16} />
+              Hop back to battlefield
+            </button>
+          </div>
+        )}
+
+        <h3 className="font-serif italic text-2xl text-[#3a3226] mb-4">Your quests</h3>
+
+        {quests.length === 0 && (
+          <p className="text-[#5b5342]">No quests yet — create one above to begin.</p>
+        )}
+
+        <div className="grid gap-5 sm:grid-cols-2">
+          {quests.map((quest) => {
+            const { done, total, energyLeft } = questProgress(quest);
+            const started = done > 0;
+            return (
+              <div
+                key={quest.id}
+                className="rounded-2xl bg-[#faf3d9] border border-[#e9dcae] p-5"
+              >
+                <div className="flex items-start gap-3 mb-3">
+                  <MonsterAvatar monster={quest.monster} />
+                  <div>
+                    <p className="font-serif text-lg font-semibold text-[#3a3226]">
+                      {quest.title}
+                    </p>
+                    <p className="text-xs text-[#7c93c8]">
+                      Guarded by {quest.monster.name}
+                    </p>
+                  </div>
+                </div>
+
+                {started && (
+                  <div className="h-1.5 rounded-full bg-[#e9dcae] mb-3 overflow-hidden">
+                    <div
+                      className="h-full bg-[#7c93c8] transition-all"
+                      style={{ width: `${100 - energyLeft}%` }}
+                    />
+                  </div>
+                )}
+
+                <ul className="mb-4 space-y-1">
+                  {quest.miniQuests.map((m) => (
+                    <li
+                      key={m.id}
+                      className={`text-sm ${
+                        m.done ? "line-through text-[#a89f86]" : "text-[#5b5342]"
+                      }`}
+                    >
+                      {m.text}
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => enterBattlefield(quest.id)}
+                    className="rounded-lg px-4 py-2 bg-[#6c7fb0] text-white text-sm font-medium hover:bg-[#5c6ea0] transition"
+                  >
+                    {started ? "Revisit battlefield" : "Enter the battlefield"}
+                  </button>
+                  <button
+                    onClick={() => handleDelete(quest.id)}
+                    aria-label={`Delete ${quest.title}`}
+                    className="text-[#5b5342] hover:text-red-600 transition"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
-    );
+      </main>
+    </div>
+  );
 }

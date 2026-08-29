@@ -19,7 +19,6 @@ export default function AppNavBar({ active }) {
             <Link to ="/game" className = "font-display italic text-xl">A Diva Has Duties</Link>
             <div className="flex gap-8 text-sm">
                 <Link to="/game" className= {linkClass("home")}>Home</Link>
-                <Link to="/dashboard" className={linkClass("dashboard")}>Dashboard</Link>
                 <button onClick={handleLogout}>Log Out</button>
             </div>
         </nav>
