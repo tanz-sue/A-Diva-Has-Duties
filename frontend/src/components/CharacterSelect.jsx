@@ -13,6 +13,8 @@ export default function CharacterSelect() {
     const [selected, setSelected] = useState(null);
     const [loading, setLoading] = useState(false);
 
+    const [error, setError] = useState("");
+
     useEffect(() => {
         if (!user) {
             navigate("/login")
@@ -25,11 +27,15 @@ export default function CharacterSelect() {
             return;
         }
         
+        setError("");
         setLoading(true);
         try {
-            await api.chooseCharacter(user.user_id, selected);
+            await api.chooseCharacter(user.user_id || user.id, selected);
             updateUser({character: selected});
             navigate("/game");
+        } catch (err) {
+            console.error(err);
+            setError(err.message || "Failed to save character. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -54,9 +60,10 @@ export default function CharacterSelect() {
                     ))}
                 </div>
 
-                <button onClick={handleConfirm} disabled={!selected || loading} className="bg-cream border-ink rounded-full px-8 py-3 font-medium shadow disabled: opacity-40">
+                <button onClick={handleConfirm} disabled={!selected || loading} className="bg-cream border-ink rounded-full px-8 py-3 font-medium shadow disabled:opacity-40 mt-4">
                     {loading ? "Entering...": "Ready to get some tasks done" }
                 </button>
+                {error && <p className="text-red-600 mt-4 font-medium">{error}</p>}
             </div>
         </div>
     );

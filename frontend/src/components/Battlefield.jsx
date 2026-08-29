@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { CheckCircle2, Circle } from "lucide-react";
 import { useQuests } from "../QuestContent.jsx";
+import { useUser } from "../UserContent.jsx";
 import { MONSTER_IMAGES } from "../monsterAssests.js";
 import AppNavBar from "./AppNavBar.jsx";
 
@@ -11,9 +12,21 @@ export default function Battlefield() {
   const { getQuest, toggleMiniQuest, setActiveQuestId, questProgress, loading } = useQuests();
   const quest = getQuest(taskId);
 
+  const { user } = useUser();
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    } else if (!user.character) {
+      navigate("/character-select");
+    }
+  }, [user, navigate]);
+
   useEffect(() => {
     if (quest) setActiveQuestId(quest.id);
   }, [quest, setActiveQuestId]);
+
+  if (!user || !user.character) return null;
   
   if(loading) {
     return (
@@ -50,7 +63,7 @@ export default function Battlefield() {
           <img 
             src={monsterImage} 
             alt={monsterLabel} 
-            className={`w-56 h-56 mx-auto md:mx-0 rounded-full object-cover border-4 border-[#e9dcae] mb-8 transition-all duration-500 ${defeated ? 'grayscale opacity-60' : ''}`}
+            className={`w-72 h-72 mx-auto md:mx-0 object-contain mb-8 drop-shadow-lg transition-all duration-500 ${defeated ? 'grayscale opacity-60' : ''}`}
           />
           <div className="flex items-baseline justify-between mb-2">
             <h3 className="font-serif italic text-xl text-ink">Energy Bar</h3>

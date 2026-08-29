@@ -21,7 +21,11 @@ async function request(path, options = {}) {
     });
     if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        throw new Error(body.detail || `Request to ${path} failed`);
+        let errorMsg = `Request to ${path} failed`;
+        if (body.detail) {
+            errorMsg = typeof body.detail === 'string' ? body.detail : JSON.stringify(body.detail);
+        }
+        throw new Error(errorMsg);
     }
     return res.json();
 }

@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Swords, Trash2 } from "lucide-react";
 import { useQuests, QuestContentProvider } from "../QuestContent.jsx";
+import { useUser } from "../UserContent.jsx";
 import { MONSTER_IMAGES } from "../monsterAssests.js";
 import AppNavBar from "./AppNavBar";
 
@@ -9,6 +10,7 @@ export default function GameScreen() {
   const [input, setInput] = useState("");
   const [creating, setCreating] = useState(false);
   const navigate = useNavigate();
+  const { user } = useUser();
   const {
     quests,
     activeQuestId,
@@ -20,6 +22,18 @@ export default function GameScreen() {
   } = useQuests();
 
   const activeQuest = activeQuestId ? getQuest(activeQuestId) : null;
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    } else if (!user.character) {
+      navigate("/character-select");
+    }
+  }, [user, navigate]);
+
+  if (!user || !user.character) {
+    return null;
+  }
 
   async function handleCreate(e) {
     e.preventDefault();
