@@ -60,11 +60,11 @@ export default function GameScreen() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f2e2ae]">
+    <div className="min-h-screen bg-butter">
       <AppNavBar />
 
       <main className="max-w-3xl mx-auto px-4 pb-16">
-        <h2 className="font-serif italic text-4xl text-[#3a3226] mb-3">
+        <h2 className="font-serif italic text-4xl text-ink mb-3">
           What are we defeating today?
         </h2>
         <p className="text-[#5b5342] mb-6 max-w-xl">
@@ -77,12 +77,12 @@ export default function GameScreen() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="e.g. Draft the client email"
-            className="flex-1 rounded-lg px-4 py-3 bg-[#faf3d9] border border-[#e3d5a0] text-[#3a3226] placeholder:text-[#9c916f] focus:outline-none focus:ring-2 focus:ring-[#7c93c8]"
+            className="flex-1 rounded-lg px-4 py-3 bg-but border border-[#e3d5a0] text-ink placeholder:text-[#9c916f] focus:outline-none focus:ring-2 focus:ring-[#7c93c8]"
           />
           <button
             type="submit"
             disabled={creating}
-            className="rounded-lg px-6 py-3 bg-[#8b8378] text-white font-medium hover:bg-[#777065] transition disabled:opacity-70 flex items-center gap-2"
+            className="rounded-lg px-6 py-3 bg-[#8b8378] text-white font-medium hover:bg-ink transition disabled:opacity-70 flex items-center gap-2"
           >
             {creating ? (
               <>
@@ -112,17 +112,15 @@ export default function GameScreen() {
                 mini quests done · {questProgress(activeQuest).energyLeft}% energy left
               </p>
             </div>
-            <button
-              onClick={() => navigate(`/battlefield/${activeQuest.id}`)}
-              className="flex items-center gap-2 rounded-lg px-4 py-2 bg-[#faf3d9] text-[#3a3226] font-medium hover:bg-[#f0e6c4] transition shrink-0"
-            >
+            <button onClick={() => navigate(`/battlefield/${activeQuest.id}`)}
+              className="flex items-center gap-2 rounded-lg px-4 py-2 bg-[#faf3d9] text-ink font-medium hover:bg-[#f0e6c4] transition shrink-0">
               <Swords size={16} />
               Hop back to battlefield
             </button>
           </div>
         )}
 
-        <h3 className="font-serif italic text-2xl text-[#3a3226] mb-4">Your quests</h3>
+        <h3 className="font-serif italic text-2xl text-ink mb-4">Your quests</h3>
 
         {quests.length === 0 && (
           <p className="text-[#5b5342]">No quests yet — create one above to begin.</p>
@@ -144,7 +142,7 @@ export default function GameScreen() {
                     className="w-12 h-12 rounded-full object-cover border-2 border-[#e9dcae]"
                   />
                   <div>
-                    <p className="font-serif text-lg font-semibold text-[#3a3226]">
+                    <p className="font-serif text-lg font-semibold text-ink">
                       {quest.title}
                     </p>
                     <p className="text-xs text-[#7c93c8]">
@@ -167,7 +165,7 @@ export default function GameScreen() {
                     <li
                       key={m.id}
                       className={`text-sm ${
-                        m.done ? "line-through text-[#a89f86]" : "text-[#5b5342]"
+                        m.done ? "line-through text-[#a89f86]" : "text-ink"
                       }`}
                     >
                       {m.text}
@@ -185,7 +183,7 @@ export default function GameScreen() {
                   <button
                     onClick={() => handleDelete(quest.id)}
                     aria-label={`Delete ${quest.title}`}
-                    className="text-[#5b5342] hover:text-red-600 transition"
+                    className="text-ink hover:text-red-600 transition"
                   >
                     <Trash2 size={18} />
                   </button>

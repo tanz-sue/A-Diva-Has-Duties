@@ -63,13 +63,13 @@ export default function Battlefield() {
           <img 
             src={monsterImage} 
             alt={monsterLabel} 
-            className={`w-72 h-72 mx-auto md:mx-0 object-contain mb-8 drop-shadow-lg transition-all duration-500 ${defeated ? 'grayscale opacity-60' : ''}`}
+            className={`w-73 h-72mx-auto md:mx-0 object-contain mb-8 drop-shadow-lg transition-all duration-500 ${defeated ? 'grayscale opacity-60' : ''}`}
           />
           <div className="flex items-baseline justify-between mb-2">
             <h3 className="font-serif italic text-xl text-ink">Energy Bar</h3>
             <span className="text-ink font-medium">{energyLeft}%</span>
           </div>
-          <div className="h-4 rounded-full bg-[#e9dcae] overflow-hidden mb-3">
+          <div className="h-4 rounded-full bg-butter overflow-hidden mb-3">
             <div className="h-full bg-skyfog transition-all duration-300" style={{ width: `${energyLeft}%` }}/>
           </div>
           <p className="text-sm italic text-ink">
