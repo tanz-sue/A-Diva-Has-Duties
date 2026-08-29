@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "../UserContext.jsx";
 import { api } from "../api.js";
 import AppNavBar from "./AppNavBar.jsx";
-import { MONSTER_IMAGES } from "../monsterAssets.js";
-import { WARRIOR_IMAGES, WARRIOR_LABELS } from "../warriorAssets.js";
+import { MONSTER_IMAGES } from "../monsterAssests.js";
+import { WARRIOR_IMAGES, WARRIOR_LABELS } from "../warriorAssests.js";
 
 export default function Dashboard() {
   const navigate = useNavigate();

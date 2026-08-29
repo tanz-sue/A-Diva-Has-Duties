@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "../UserContext.jsx";
 import { api } from "../api.js";
 import AppNavBar from "./AppNavBar.jsx";
-import { WARRIOR_IMAGES, WARRIOR_LABELS } from "../warriorAssets.js";
+import { WARRIOR_IMAGES, WARRIOR_LABELS } from "../warriorAssests.js";
 
 const FIGHTER_IDS = ["witch_cat", "raccoon_baker", "penguin_wizard"];
 

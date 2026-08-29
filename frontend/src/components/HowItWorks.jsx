@@ -1,7 +1,7 @@
 import React from "react";
 import NavBar from "./NavBar.jsx";
-import { WARRIOR_IMAGES } from "../warriorAssets.js";
-import { MONSTER_IMAGES } from "../monsterAssets.js";
+import { WARRIOR_IMAGES } from "../warriorAssests.js";
+import { MONSTER_IMAGES } from "../monsterAssests.js";
 
 const FIGHTER_IDS = ["witch_cat", "raccoon_baker", "penguin_wizard"];
 
