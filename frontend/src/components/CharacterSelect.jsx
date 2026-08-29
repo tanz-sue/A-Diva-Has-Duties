@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "../UserContext.jsx";
+import { useUser } from "../UserContent.jsx";
 import { api } from "../api.js";
 import AppNavBar from "./AppNavBar.jsx";
 import { WARRIOR_IMAGES, WARRIOR_LABELS } from "../warriorAssests.js";
@@ -14,12 +14,18 @@ export default function CharacterSelect() {
     const [loading, setLoading] = useState(false);
 
     async function handleConfirm() {
-        if(!selected || !user ) return;
+        if(!selected || !user ) {
+            console.warn ("User or selection missing", {user, selected});
+            return;
+        }
+
         setLoading(true);
         try {
             await api.chooseCharacter(user.user_id, selected);
             updateUser({character: selected});
             navigate("/game");
+        } catch (error) {
+            console.error("Failed to choose character:", error);
         } finally {
             setLoading(false);
         }
@@ -42,7 +48,7 @@ export default function CharacterSelect() {
                     ))}
                 </div>
 
-                <button onClick={handleConfirm} disabled={!selected || loading} className="bg-cream border-ink rounded-full px-8 py-3 font-medium shadow disabled: opacity-40">
+                <button onClick={handleConfirm} disabled={!selected || loading || !user} className="bg-cream border-ink rounded-full px-8 py-3 font-medium shadow disabled: opacity-40">
                     {loading ? "Entering...": "Ready to get some tasks done" }
                 </button>
             </div>

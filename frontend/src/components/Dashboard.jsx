@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "../UserContext.jsx";
+import { useUser } from "../UserContent.jsx";
 import { api } from "../api.js";
 import AppNavBar from "./AppNavBar.jsx";
 import { MONSTER_IMAGES } from "../monsterAssests.js";

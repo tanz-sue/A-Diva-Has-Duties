@@ -1,6 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import { UserProvider } from "./UserContext.jsx";
+import { UserProvider } from "./UserContent.jsx";
 import LandingPage from "./components/LandingPage.jsx";
 import Login from "./components/Login.jsx";
 import SignUp from "./components/SignUp.jsx";

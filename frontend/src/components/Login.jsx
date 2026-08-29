@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useUser } from "../UserContext.jsx";
+import { useUser } from "../UserContent.jsx";
 import { api } from "../api.js";
 import NavBar from "./NavBar.jsx";
 
