@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../UserContent.jsx";
 import { api } from "../api.js";
@@ -13,23 +13,29 @@ export default function CharacterSelect() {
     const [selected, setSelected] = useState(null);
     const [loading, setLoading] = useState(false);
 
+    useEffect(() => {
+        if (!user) {
+            navigate("/login")
+        }
+    }, [user, navigate]);
+
     async function handleConfirm() {
         if(!selected || !user ) {
             console.warn ("User or selection missing", {user, selected});
             return;
         }
-
+        
         setLoading(true);
         try {
             await api.chooseCharacter(user.user_id, selected);
             updateUser({character: selected});
             navigate("/game");
-        } catch (error) {
-            console.error("Failed to choose character:", error);
         } finally {
             setLoading(false);
         }
     }
+
+    console.log("Current state:", { selected, loading, user });
 
     return (
         <div className="min-h-screen bg-diva-gradient">
@@ -48,7 +54,7 @@ export default function CharacterSelect() {
                     ))}
                 </div>
 
-                <button onClick={handleConfirm} disabled={!selected || loading || !user} className="bg-cream border-ink rounded-full px-8 py-3 font-medium shadow disabled: opacity-40">
+                <button onClick={handleConfirm} disabled={!selected || loading} className="bg-cream border-ink rounded-full px-8 py-3 font-medium shadow disabled: opacity-40">
                     {loading ? "Entering...": "Ready to get some tasks done" }
                 </button>
             </div>
