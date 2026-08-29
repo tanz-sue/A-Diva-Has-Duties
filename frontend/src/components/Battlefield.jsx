@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { CheckCircle2, Circle } from "lucide-react";
-import { useQuests } from "../QuestContent";
+import { useQuests } from "../QuestContent.jsx";
 import { MONSTER_IMAGES } from "../monsterAssests.js";
 import AppNavBar from "./AppNavBar.jsx";
 
