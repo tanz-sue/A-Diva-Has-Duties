@@ -1,8 +1,22 @@
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 async function request(path, options = {}) {
+    const headers = { "Content-Type": "application/json" };
+    
+    try {
+        const saved = localStorage.getItem("diva_user");
+        if (saved) {
+            const user = JSON.parse(saved);
+            if (user && user.access_token) {
+                headers["Authorization"] = `Bearer ${user.access_token}`;
+            }
+        }
+    } catch (e) {
+        console.error("Error reading token from localStorage:", e);
+    }
+
     const res = await fetch(`${API_URL}${path}`, {
-        headers: { "Content-Type": "application/json" },
+        headers: headers,
         ...options,
     });
     if (!res.ok) {

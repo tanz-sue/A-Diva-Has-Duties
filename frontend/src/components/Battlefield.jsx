@@ -6,10 +6,10 @@ import { MONSTER_IMAGES } from "../monsterAssests.js";
 import AppNavBar from "./AppNavBar.jsx";
 
 export default function Battlefield() {
-  const { id } = useParams();
+  const { taskId } = useParams();
   const navigate = useNavigate();
-  const { getQuest, toggleMiniQuest, setActiveQuestId, questProgress } = useQuests();
-  const quest = getQuest(id);
+  const { getQuest, toggleMiniQuest, setActiveQuestId, questProgress, loading } = useQuests();
+  const quest = getQuest(taskId);
 
   useEffect(() => {
     if (quest) setActiveQuestId(quest.id);
@@ -29,7 +29,7 @@ export default function Battlefield() {
         <AppNavBar />
         <main className="max-w-3xl mx-auto">
           <p className="text-ink mb-4">That quest doesn&apos;t exist anymore.</p>
-          <button onClick={() => navigate("/")} className="rounded-lg px-4 py-2 bg-[#faf3d9] border border-butter text-ink">
+          <button onClick={() => navigate("/game")} className="rounded-lg px-4 py-2 bg-[#faf3d9] border border-butter text-ink">
             Back to game screen
           </button>
         </main>
@@ -47,7 +47,11 @@ export default function Battlefield() {
 
       <main className="max-w-5xl mx-auto px-4 py-10 grid gap-10 md:grid-cols-2 items-start">
         <div>
-          <img src={monsterImage} alt={monsterLabel} className="w-56 h-56 mx-auto md:mx-0 rounded-full object-cover border-4 border-[#e9dcae] mb-8"/>
+          <img 
+            src={monsterImage} 
+            alt={monsterLabel} 
+            className={`w-56 h-56 mx-auto md:mx-0 rounded-full object-cover border-4 border-[#e9dcae] mb-8 transition-all duration-500 ${defeated ? 'grayscale opacity-60' : ''}`}
+          />
           <div className="flex items-baseline justify-between mb-2">
             <h3 className="font-serif italic text-xl text-ink">Energy Bar</h3>
             <span className="text-ink font-medium">{energyLeft}%</span>
@@ -56,8 +60,8 @@ export default function Battlefield() {
             <div className="h-full bg-skyfog transition-all duration-300" style={{ width: `${energyLeft}%` }}/>
           </div>
           <p className="text-sm italic text-ink">
-            {defeated ? `${monster.name} has been defeated! Every mini quest is done.`
-              : `Make the energy bar zero to defeat ${monster.name} by completing the mini quests.`}
+            {defeated ? `${quest.monster.name} has been defeated! Every mini quest is done.`
+              : `Make the energy bar zero to defeat ${quest.monster.name} by completing the mini quests.`}
           </p>
         </div>
 
@@ -86,8 +90,14 @@ export default function Battlefield() {
             ))}
           </ul>
 
-          <button onClick={() => navigate("/")} className="w-full rounded-lg px-4 py-3 bg-[#faf3d9] text-ink font-medium hover:bg-[#f0e6c4] transition">
-            Pause &amp; exit to game screen
+          {defeated && (
+            <div className="mb-4 w-full rounded-lg px-4 py-3 bg-white/20 text-white font-medium text-center backdrop-blur-sm border border-white/30">
+              Monster defeated! Task complete 🎉
+            </div>
+          )}
+
+          <button onClick={() => navigate("/game")} className="w-full rounded-lg px-4 py-3 bg-[#faf3d9] text-ink font-medium hover:bg-[#f0e6c4] transition">
+            {defeated ? "Return to game screen" : "Pause & exit to game screen"}
           </button>
         </div>
       </main>

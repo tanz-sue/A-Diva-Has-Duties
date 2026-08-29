@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Swords, Trash2 } from "lucide-react";
-import { useQuests } from "../QuestContent";
+import { useQuests, QuestContentProvider } from "../QuestContent.jsx";
 import { MONSTER_IMAGES } from "../monsterAssests.js";
 import AppNavBar from "./AppNavBar";
 
@@ -29,6 +29,8 @@ export default function GameScreen() {
     try {
       await createQuest(title);
       setInput("");
+    } catch (err) {
+      alert("Failed to create quest: " + err.message);
     } finally {
       setCreating(false);
     }
@@ -45,7 +47,7 @@ export default function GameScreen() {
 
   return (
     <div className="min-h-screen bg-[#f2e2ae]">
-      <Header />
+      <AppNavBar />
 
       <main className="max-w-3xl mx-auto px-4 pb-16">
         <h2 className="font-serif italic text-4xl text-[#3a3226] mb-3">
@@ -65,9 +67,20 @@ export default function GameScreen() {
           />
           <button
             type="submit"
-            className="rounded-lg px-6 py-3 bg-[#8b8378] text-white font-medium hover:bg-[#777065] transition"
+            disabled={creating}
+            className="rounded-lg px-6 py-3 bg-[#8b8378] text-white font-medium hover:bg-[#777065] transition disabled:opacity-70 flex items-center gap-2"
           >
-            Create quest
+            {creating ? (
+              <>
+                <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Summoning
+              </>
+            ) : (
+              "Create quest"
+            )}
           </button>
         </form>
 
@@ -111,7 +124,11 @@ export default function GameScreen() {
                 className="rounded-2xl bg-[#faf3d9] border border-[#e9dcae] p-5"
               >
                 <div className="flex items-start gap-3 mb-3">
-                  <MonsterAvatar monster={quest.monster} />
+                  <img 
+                    src={MONSTER_IMAGES[quest.monsterName]} 
+                    alt={quest.monsterName} 
+                    className="w-12 h-12 rounded-full object-cover border-2 border-[#e9dcae]"
+                  />
                   <div>
                     <p className="font-serif text-lg font-semibold text-[#3a3226]">
                       {quest.title}
