@@ -8,7 +8,6 @@ import HowItWorks from "./components/HowItWorks.jsx";
 import CharacterSelect from "./components/CharacterSelect.jsx";
 import GameScreen from "./components/GameScreen.jsx";
 import Battlefield from "./components/Battlefield.jsx";
-import Dashboard from "./components/Dashboard.jsx";
 import { QuestContentProvider } from "./QuestContent.jsx";
 export default function App() {
     return (
@@ -23,7 +22,6 @@ export default function App() {
                     <Route path="/game" element={<GameScreen />} />
                     <Route path="/battlefield" element={<Battlefield />} />
                     <Route path="/battlefield/:taskId" element={<Battlefield />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
                 </Routes>
             </QuestContentProvider>
         </UserProvider>

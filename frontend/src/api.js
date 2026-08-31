@@ -53,6 +53,4 @@ export const api = {
             method: "POST",
             body: JSON.stringify({ task_id, subtask_index }),
         }),
-
-    getProgress: (user_id) => request(`/user/${user_id}/progress`),
 };

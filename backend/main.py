@@ -357,24 +357,6 @@ def complete_subtask(req: CompleteSubtaskRequest, current_user_id: str = Depends
         "user": user_data,
     }
 
-# ─── Progress endpoint ────────────────────────────────────────
-@app.get("/user/{user_id}/progress")
-def get_progress(user_id: str, current_user_id: str = Depends(get_current_user_id)):
-    if user_id != current_user_id:
-        raise HTTPException(status_code=403, detail="Not authorized to view this progress")
-
-    response = supabase.table("profiles").select("*").eq("id", user_id).execute()
-
-    if not response.data:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    user = response.data[0]
-
-    return {
-        **user,
-        "tasks_required_this_level": tasks_required_for_level(user["level"])
-    }
-
 @app.get("/")
 def root():
     return {"status": "A Diva Has Duties API is running"}

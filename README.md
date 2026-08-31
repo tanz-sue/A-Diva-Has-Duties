@@ -14,8 +14,7 @@ No penalty for an unfinished battle — the monster just waits for you to come b
   3–6 concrete subtasks
 - Each task spawns a random monster with its own energy bar
 - Checking off subtasks drains the bar; hitting zero defeats the monster
-- Dashboard: track your battle progress + last monster you defeated
-- Unfinished tasks can be rejoined anytime from the sidebar or Dashboard
+- Unfinished tasks can be rejoined anytime from the game screen
 - How It Works explainer page for new visitors
 
 ## Stack
