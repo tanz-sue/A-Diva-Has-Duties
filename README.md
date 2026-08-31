@@ -4,8 +4,7 @@
 
 Type in what you need to get done. It gets broken into subtasks. Every
 subtask you check off drains a monster's energy bar until it's defeated.
-Do enough of that and your Diva Fighter levels up. No penalty for an
-unfinished battle — the monster just waits for you to come back.
+No penalty for an unfinished battle — the monster just waits for you to come back.
 
 ## Features
 
@@ -15,9 +14,7 @@ unfinished battle — the monster just waits for you to come back.
   3–6 concrete subtasks
 - Each task spawns a random monster with its own energy bar
 - Checking off subtasks drains the bar; hitting zero defeats the monster
-- Leveling system: more tasks required to level up as you go higher
-  (see table below)
-- Dashboard: current level progress + last monster you defeated
+- Dashboard: track your battle progress + last monster you defeated
 - Unfinished tasks can be rejoined anytime from the sidebar or Dashboard
 - How It Works explainer page for new visitors
 
@@ -66,26 +63,12 @@ npm run dev
 
 Open http://localhost:5173.
 
-## Leveling table
-
-| Level range | Tasks to level up |
-|---|---|
-| 1–10 | 2 |
-| 11–50 | 4 |
-| 51–100 | 6 |
-| 101–150 | 8 |
-| 151–200 | 10 |
-| ... | +2 every 50 levels |
-| 401+ | 20 (cap) |
-
-Implemented in `backend/main.py`'s `tasks_required_for_level()`.
-
 ## Status: what's real vs. what's scaffolded
 
 Worth knowing before you show this to anyone or rely on it:
 
 - ✅ **Frontend** — all screens are fully built and wired to the backend API.
-- ✅ **AI subtasks** — real Claude calls, with a generic fallback if no API
+- ✅ **AI subtasks** — real Gemini calls, with a generic fallback if no API
   key is set.
 - ✅ **Supabase database** — the `profiles` and `tasks` tables, Row Level
   Security, and the auto-create-profile trigger are all set up and live in
