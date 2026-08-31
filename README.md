@@ -2,6 +2,8 @@
 
 **Break it. Do it. Done.** Your task, gamified into a legendary adventure.
 
+🌐 **Live Website:** [https://a-diva-has-duties-1.onrender.com](https://a-diva-has-duties-1.onrender.com)
+
 Type in what you need to get done. It gets broken into subtasks. Every
 subtask you check off drains a monster's energy bar until it's defeated.
 No penalty for an unfinished battle — the monster just waits for you to come back.
@@ -30,28 +32,24 @@ No penalty for an unfinished battle — the monster just waits for you to come b
 
 ```
 diva-has-duties/
-├── frontend/          React app — see frontend/README.md
-├── backend/           FastAPI app — see backend/README.md
+├── frontend/          React app
+├── backend/           FastAPI app
 └── README.md          you are here
 ```
 
 ## Quickstart
 
-Full setup instructions live in each half's own README:
+### Live App
+Play directly online: [https://a-diva-has-duties-1.onrender.com](https://a-diva-has-duties-1.onrender.com)
 
-- [`frontend/README.md`](frontend/README.md) — installing, running, adding
-  your artwork
-- [`backend/README.md`](backend/README.md) — installing, running, API
-  reference, environment variables
-
-The short version:
+### Running Locally
 
 ```bash
 # Terminal 1 — backend
 cd backend
 python -m venv venv && source venv/bin/activate   # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-cp .env.example .env      # fill in your keys (see backend/README.md)
+cp .env.example .env      # fill in your keys
 uvicorn main:app --reload --port 8000
 
 # Terminal 2 — frontend
@@ -79,16 +77,11 @@ Worth knowing before you show this to anyone or rely on it:
   the backend code just needs its `# DB:` comments turned into real
   `supabase-py` calls.
 
-## Deployment (free)
+## Deployment
 
+- **Live Web App** → [https://a-diva-has-duties-1.onrender.com](https://a-diva-has-duties-1.onrender.com)
 - **Backend** → Render (free Web Service, sleeps after 15 min idle)
-- **Frontend** → Vercel (free static hosting)
 - **Database/Auth** → Supabase (free project)
-
-Remember to:
-1. Set `FRONTEND_ORIGIN` on Render to your live Vercel URL (CORS)
-2. Set `VITE_API_URL` on Vercel to your live Render URL
-3. Add your Vercel URL to Supabase's Authentication → URL Configuration
 
 ## Roadmap
 
